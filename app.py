@@ -23,3 +23,14 @@ if st.button("Run"):
     except Exception:
         st.error("Error occurred")
         st.text(traceback.format_exc())
+
+import streamlit as st
+from agent.graph import agent
+
+st.title("Coder Buddy")
+
+user_input = st.text_input("Ask something:")
+
+if user_input:
+    result = agent({"input": user_input})
+    st.write(result["output"])
