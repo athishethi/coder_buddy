@@ -1,0 +1,6 @@
+openai
+langchain
+google-search-results
+streamlit
+langchain-groq
+python-dotenv
