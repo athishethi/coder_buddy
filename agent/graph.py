@@ -224,3 +224,22 @@ def coder_agent(state):
         print("Coder agent failed:", e)
         return {"output": "Error occurred. Please try again later."}
         agent = coder_agent
+        from langchain_openai import ChatOpenAI
+from langchain_core.tools import tool
+from langgraph.prebuilt import create_react_agent
+
+# LLM
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+# Example tool
+@tool
+def multiply(a: int, b: int) -> int:
+    return a * b
+
+tools = [multiply]
+
+# ✅ Correct modern usage
+react_agent = create_react_agent(
+    llm,
+    tools
+)
