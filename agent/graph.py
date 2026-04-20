@@ -179,3 +179,48 @@ IMPORTANT:
     coder_state.current_step_idx += 1
 
     return {"coder_state": coder_state}
+
+import os
+import time
+from groq import RateLimitError
+from langchain_groq import ChatGroq
+from langgraph.prebuilt import create_react_agent
+
+def create_llm(model="llama3-8b-8192"):
+    return ChatGroq(
+        groq_api_key=os.getenv("GROQ_API_KEY"),
+        model_name=model,
+        temperature=0,
+        max_tokens=200
+    )
+
+def safe_invoke(llm_obj, prompt):
+    for attempt in range(3):
+        try:
+            return llm_obj.invoke(prompt)
+
+        except RateLimitError:
+            wait = 5 * (attempt + 1)
+            print(f"Rate limit hit. Waiting {wait}s...")
+            time.sleep(wait)
+
+    fallback_llm = create_llm("llama3-8b-8192")
+    return fallback_llm.invoke(prompt)
+tools = []  # your tools (keep or modify)
+
+react_agent = create_react_agent(
+    llm=create_llm("llama3-8b-8192"),  # ✅ force small model
+    tools=tools
+)
+def coder_agent(state):
+    try:
+        result = safe_invoke(
+            react_agent,
+            state["input"]
+        )
+        return {"output": result}
+
+    except Exception as e:
+        print("Coder agent failed:", e)
+        return {"output": "Error occurred. Please try again later."}
+        agent = coder_agent
