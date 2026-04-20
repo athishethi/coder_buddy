@@ -2,11 +2,12 @@ import streamlit as st
 import traceback
 from agent.graph import agent
 
-st.set_page_config(page_title="Project Planner")
+st.set_page_config(page_title="Coder Buddy")
 
-st.title("Engineering Project Planner")
+st.title("🤖 Coder Buddy")
 
-user_prompt = st.text_area("Enter your project prompt:")
+# Single input
+user_prompt = st.text_area("Enter your project / coding request:")
 
 if st.button("Run"):
     try:
@@ -17,20 +18,12 @@ if st.button("Run"):
                 {"user_prompt": user_prompt},
                 {"recursion_limit": 100}
             )
-            st.success("Result generated")
-            st.write(result)
 
-    except Exception:
-        st.error("Error occurred")
+            st.success("✅ Result generated")
+
+            # Pretty display
+            st.json(result)
+
+    except Exception as e:
+        st.error("❌ Error occurred")
         st.text(traceback.format_exc())
-
-import streamlit as st
-from agent.graph import agent
-
-st.title("Coder Buddy")
-
-user_input = st.text_input("Ask something:")
-
-if user_input:
-    result = agent({"input": user_input})
-    st.write(result["output"])
